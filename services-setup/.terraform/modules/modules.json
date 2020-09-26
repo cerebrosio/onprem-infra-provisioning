@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"kubernetes_dashboard","Source":"cookielab/dashboard/kubernetes","Version":"0.9.0","Dir":".terraform/modules/kubernetes_dashboard"},{"Key":"tiller","Source":"terraform-module/tiller/kubernetes","Version":"2.0.0","Dir":".terraform/modules/tiller"}]}

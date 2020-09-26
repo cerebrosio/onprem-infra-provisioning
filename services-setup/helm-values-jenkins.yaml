@@ -1,0 +1,4 @@
+master:
+        adminUser: "admin"
+        adminPassword: "qwerty"
+        jenkinsUrl: "http://192.168.50.10:8443/"
