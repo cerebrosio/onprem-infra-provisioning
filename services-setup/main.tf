@@ -1,15 +1,8 @@
 variable "full_path_to_certs" {
   default = "/Users/mgutnik/Projects/io.cerebros.infra/kubernetes-setup/certs"
 }
-
 provider "kubernetes" {
-  #  config_context_cluster   = "minikube"
-  #host = "http://192.168.50.10:6443"
-  #client_certificate     = file("${var.full_path_to_certs}/front-proxy-client.crt") #client-cert.pem
-  #client_key             = file("${var.full_path_to_certs}/front-proxy-client.key")  #client-key.pem
-  #cluster_ca_certificate = file("${var.full_path_to_certs}/front-proxy-ca.crt") #cluster-ca-cert.pem
-  config_path = file("${var.full_path_to_certs}/config")
-  load_config_file = true
+  config_path = "${var.full_path_to_certs}/config"
 }
 module "tiller" {
   source  = "terraform-module/tiller/kubernetes"
@@ -19,15 +12,10 @@ module "tiller" {
 }
 provider "helm" {
   kubernetes {
-#      config_context_cluster   = "minikube"
-      #host = "http://192.168.50.10:6443"
-      #client_certificate     = file("${var.full_path_to_certs}/front-proxy-client.crt") #client-cert.pem
-      #client_key             = file("${var.full_path_to_certs}/front-proxy-client.key")  #client-key.pem
-      #cluster_ca_certificate = file("${var.full_path_to_certs}/front-proxy-ca.crt") #cluster-ca-cert.pem
-      config_path = file("${var.full_path_to_certs}/config")
-      load_config_file = true 
+      config_path = "${var.full_path_to_certs}/config"
   }
 }
+/*
 resource "helm_release" "jenkins" {
   name  = "jenkins"
   chart = "jenkins"
@@ -37,21 +25,18 @@ resource "helm_release" "jenkins" {
   values = [
     "${file("helm-values-jenkins.yaml")}"
   ]
-#  set {
-#    name  = "master.adminUser"
-#    value = "admin"
-#    type = "string"
-#  }
-#  set {
-#    name  = "master.adminPassword"
-#    value = "qwerty"
-#    type = "string"
-#  }
+} 
+*/
+resource "helm_release" "ingress" {
+  repository = "https://kubernetes-charts.storage.googleapis.com"
+  chart = "nginx-ingress"
+  name = "ingress"
+  namespace = "nginx-ingress"
+  create_namespace = "true"
 }
 module "kubernetes_dashboard" {
   source = "cookielab/dashboard/kubernetes"
   version = "0.9.0"
-
   kubernetes_namespace_create = true
   kubernetes_dashboard_csrf = "qwerty"
 }
@@ -76,5 +61,39 @@ resource "kubernetes_cluster_role_binding" "admin_user" {
     namespace = "kubernetes-dashboard"
     kind      = "ServiceAccount"
     name      = "admin-user"
+  }
+}
+
+resource "kubernetes_cluster_role" "kubernetes_dashboard_anonymous" {
+    metadata {
+        name = "kubernetes-dashboard-anonymous"
+    }
+
+    rule {
+        api_groups     = [""]
+        resources      = ["services/proxy"]
+        resource_names = ["https:kubernetes-dashboard:"]
+        verbs          = ["get", "list", "watch", "create", "update", "patch", "delete"]
+    }
+    rule {
+      non_resource_urls  = ["/ui", "/ui/*", "/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/*"]
+      verbs              = ["get", "list", "watch", "create", "update", "patch", "delete"]
+    }
+}
+
+resource "kubernetes_cluster_role_binding" "kubernetes_dashboard_anonymous" {
+  depends_on = [kubernetes_cluster_role.kubernetes_dashboard_anonymous]
+  metadata {
+    name = "kubernetes-dashboard-anonymous"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind = "ClusterRole"
+    name = "kubernetes-dashboard-anonymous"
+  }
+  subject {
+    kind = "User"
+    name = "system:anonymous"
+    namespace = "kubernetes-dashboard"
   }
 }

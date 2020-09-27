@@ -113,14 +113,12 @@
     local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
 
   - name: Create list of certificates to fetch
-    #shell: (cd /etc/kubernetes/pki; find . -maxdepth 1 -type f) | cut -d'/' -f2
-    shell: (cd ~/.kube; find . -maxdepth 1 -type f) | cut -d'/' -f2
+    shell: (cd /home/vagrant/.kube; find . -maxdepth 1 -type f) | cut -d'/' -f2
     register: certs_to_fetch
 
   - name: Fetch certificates directory
     fetch:
-      #src: /etc/kubernetes/pki/{{ item }}
-      src:  ~/.kube/{{ item }}
+      src:  /home/vagrant/.kube/{{ item }}
       dest: ./certs/
       mode: 0774
       flat: yes

@@ -1,2 +1,9 @@
 .vagrant
+tmp
+
 /kubernetes-setup/certs
+/kubernetes-setup/join-command
+
+/services-setup/.terraform
+/services-setup/terraform.tfstate
+/services-setup/terraform.tfstate.backup
