@@ -15,18 +15,6 @@ provider "helm" {
       config_path = "${var.full_path_to_certs}/config"
   }
 }
-/*
-resource "helm_release" "jenkins" {
-  name  = "jenkins"
-  chart = "jenkins"
-  namespace = "jenkins"
-  repository  = "https://kubernetes-charts.storage.googleapis.com/"
-  create_namespace = "true"
-  values = [
-    "${file("helm-values-jenkins.yaml")}"
-  ]
-} 
-*/
 resource "helm_release" "ingress" {
   repository = "https://kubernetes-charts.storage.googleapis.com"
   chart = "nginx-ingress"
