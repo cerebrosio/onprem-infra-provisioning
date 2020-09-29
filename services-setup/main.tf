@@ -15,24 +15,13 @@ provider "helm" {
       config_path = "${var.full_path_to_certs}/config"
   }
 }
+
 module "kubernetes_dashboard" {
   source = "cookielab/dashboard/kubernetes"
   version = "0.11.0"
   kubernetes_namespace_create = true
   kubernetes_dashboard_csrf = "qwerty"
 }
-/*
-resource "helm_release" "kubernetes_dashboard" {
-  repository = "https://kubernetes.github.io/dashboard/"
-  chart = "kubernetes-dashboard"
-  name = "kubernetes-dashboard"
-  namespace = "kubernetes-dashboard"
-  create_namespace = "true"
-  values = [
-    "${file("helm-values-dashboard.yaml")}"
-  ]
-}
-*/
 resource "kubernetes_service_account" "admin_user" {
   metadata {
     name = "admin-user"
@@ -70,7 +59,7 @@ resource "kubernetes_cluster_role" "kubernetes_dashboard_anonymous" {
         verbs          = ["get", "list", "watch", "create", "update", "patch", "delete"]
     }
     rule {
-      non_resource_urls  = ["/ui", "/ui/*", "/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/*"]
+      non_resource_urls  = ["/ui", "/ui/*", "/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/*"]
       verbs              = ["get", "list", "watch", "create", "update", "patch", "delete"]
     }
 }
@@ -91,7 +80,7 @@ resource "kubernetes_cluster_role_binding" "kubernetes_dashboard_anonymous" {
     namespace = "kubernetes-dashboard"
   }
 }
-/*
+
 resource "helm_release" "ingress" {
   repository = "https://kubernetes-charts.storage.googleapis.com"
   chart = "nginx-ingress"
@@ -99,4 +88,3 @@ resource "helm_release" "ingress" {
   namespace = "nginx-ingress"
   create_namespace = "true"
 }
-*/
