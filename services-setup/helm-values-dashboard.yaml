@@ -1,0 +1,3 @@
+rbac:
+        clusterReadOnlyRole: true
+        clusterAdminRole: true
