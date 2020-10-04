@@ -81,10 +81,13 @@ resource "kubernetes_cluster_role_binding" "kubernetes_dashboard_anonymous" {
   }
 }
 
-resource "helm_release" "ingress" {
+resource "helm_release" "nginx_ingress" {
   repository = "https://kubernetes-charts.storage.googleapis.com"
   chart = "nginx-ingress"
-  name = "ingress"
+  name = "nginx-ingress"
   namespace = "nginx-ingress"
   create_namespace = "true"
+  values = [
+    "${file("helm-values-ingress.yaml")}"
+  ]
 }

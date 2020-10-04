@@ -1,4 +1,3 @@
-/*
 resource "helm_release" "jenkins" {
   name  = "jenkins"
   chart = "jenkins"
@@ -9,4 +8,3 @@ resource "helm_release" "jenkins" {
     "${file("helm-values-jenkins.yaml")}"
   ]
 } 
-*/

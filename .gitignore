@@ -8,3 +8,5 @@ tmp
 /services-setup/terraform.tfstate
 /services-setup/terraform.tfstate.backup
 /services-setup/.terraform.tfstate.lock.info
+/services-setup/dashboard_token.txt
+
