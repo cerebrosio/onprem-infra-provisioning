@@ -1,0 +1,25 @@
+---
+- hosts: all
+  become: true
+  tasks:
+  - name: Install packages that allow apt to be used over HTTPS
+    apt:
+      name: "{{ packages }}"
+      state: present
+      update_cache: yes
+    vars:
+      packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+
+  - name: Create cluster requred directories
+    file:
+      path: "{{ item }}"
+      state: directory
+    with_items:
+      - '/opt/k8s-logs'
+      - '/opt/k8s-data'
+      - '/opt/k8s-temp'

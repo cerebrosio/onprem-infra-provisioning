@@ -7,4 +7,5 @@ resource "helm_release" "jenkins" {
   values = [
     "${file("helm-values-jenkins.yaml")}"
   ]
+  timeout = "600"
 } 

@@ -4,6 +4,25 @@ variable "full_path_to_certs" {
 provider "kubernetes" {
   config_path = "${var.full_path_to_certs}/config"
 }
+
+resource "kubernetes_persistent_volume" "nfs-volume-data" {
+  metadata {
+    name = "nfs-volume-data"
+  }
+  spec {
+    capacity = {
+      storage = "10Gi"
+    }
+    access_modes = ["ReadWriteMany"]
+    persistent_volume_source {
+      nfs {
+        path   = "/opt/k8s-data"
+        server = "192.168.50.50"
+      }
+    }
+  }
+}
+
 module "tiller" {
   source  = "terraform-module/tiller/kubernetes"
   version = "2.0.0"

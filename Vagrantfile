@@ -34,4 +34,16 @@ Vagrant.configure("2") do |config|
             end
         end
     end
+
+    config.vm.define "k8s-nfs" do |storage|
+        storage.vm.box = IMAGE_NAME
+        storage.vm.network "private_network", ip: "192.168.50.50"
+        storage.vm.hostname = "k8s-nfs"
+        storage.vm.provision "ansible" do |ansible|
+            ansible.playbook = "kubernetes-setup/nfs-playbook.yml"
+            ansible.extra_vars = {
+                node_ip: "192.168.50.50",
+            }
+        end
+    end
   end
