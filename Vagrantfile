@@ -46,4 +46,16 @@ Vagrant.configure("2") do |config|
             }
         end
     end
+
+    config.vm.define "db-server" do |mongodb|
+        mongodb.vm.box = IMAGE_NAME
+        mongodb.vm.network "private_network", ip: "192.168.50.80"
+        mongodb.vm.hostname = "db-server"
+        mongodb.vm.provision "ansible" do |ansible|
+            ansible.playbook = "kubernetes-setup/mongodb-playbook.yml"
+            ansible.extra_vars = {
+                node_ip: "192.168.50.80",
+            }
+        end
+    end
   end
